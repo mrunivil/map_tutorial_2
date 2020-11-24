@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <title>Parcel Sandbox</title>
+    <meta charset="UTF-8" />
+    <link href="styles.css" />
+  </head>
+
+  <body>
+    <div style="display: flex;">
+      <div style="display: flex; flex-direction: column;">
+        <button>previous layer</button>
+        <button>add layer</button>
+        <button>next layer</button>
+        <button id="btn_zoom_in">zoom in</button>
+        <button id="btn_zoom_out">zoom out</button>
+        <button id="btn_scroll_up">up</button>
+        <button id="btn_scroll_right">right</button>
+        <button id="btn_scroll_down">down</button>
+        <button id="btn_scroll_left">left</button>
+        <button id="btn_log_model">Log Model</button>
+      </div>
+      <div id="map"></div>
+    </div>
+    <script type="module" src="src/index.ts"></script>
+  </body>
+</html>

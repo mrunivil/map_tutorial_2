@@ -1,0 +1,16 @@
+* {
+  box-sizing: border-box;
+}
+#camera {
+  border: 2px solid #c37531;
+}
+#map {
+  border: 2px solid #c7a5e0;
+  position: relative;
+}
+.floor {
+  background-color: #82aef0;
+}
+.floorShape {
+  border: 1px solid #333333;
+}
