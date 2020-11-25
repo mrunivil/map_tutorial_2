@@ -1,5 +1,5 @@
 import { MAP_HEIGHT, MAP_WIDTH } from ".";
-import { ViewPort } from "./viewport";
+import { ViewPort } from "./model/viewport";
 export abstract class ViewportService {
   private static readonly cameraSpeed = 25;
   private static readonly viewPortWidth = 90;
