@@ -1,8 +1,8 @@
 import { FloorService } from "./floor.service";
 import { Layer } from "./model/layer";
 import { Shape } from "./model/shape";
+import { detectCollision } from "./utility";
 export abstract class LayerService {
-  static readonly cellSize = 32;
   static readonly width = 10;
   static readonly height = 10;
 
@@ -18,9 +18,15 @@ export abstract class LayerService {
 
   static toHTML(layer: Layer) {}
 
-  static addShape(shape: Shape, layer: Layer) {}
+  static addShape(shape: Shape, layer: Layer): Layer {
+    if (this.canAddShape(shape, layer))
+      return { ...layer, shapes: [...layer.shapes, shape] };
+    return layer;
+  }
   static removeShape(shape: Shape, layer: Layer) {}
-  static canAddShape(shape: Shape, layer: Layer) {}
+  static canAddShape(shape: Shape, layer: Layer): boolean {
+    return !detectCollision(shape, layer);
+  }
   static canAddShapeTop(shape: Shape, layer: Layer) {}
   static canAddShapeRight(shape: Shape, layer: Layer) {}
   static canAddShapeBottom(shape: Shape, layer: Layer) {}

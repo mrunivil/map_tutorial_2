@@ -1,11 +1,10 @@
-import { LayerService } from "./layer.service";
 import { MapService } from "./map.service";
-import { ShapeService } from "./shape.service";
 import { Shape } from "./model/shape";
 import { WifiMap } from "./model/wifi.map";
 
 export const MAP_WIDTH = 9;
 export const MAP_HEIGHT = 16;
+export const CELL_SIZE = 32;
 
 let map: WifiMap;
 
@@ -28,7 +27,16 @@ function draw() {
       "#currentLayer"
     ) as HTMLParagraphElement;
     labelCurrentLayer.innerHTML = MapService.currentLayer.name || "no";
-    // do the magic
+
+    const boardEl = document.querySelector("#board") as HTMLDivElement;
+    const mapEl = document.querySelector("#map") as HTMLDivElement;
+    if (mapEl) {
+      MapService.toHTML(map, boardEl, mapEl);
+    } else {
+      boardEl.appendChild(
+        MapService.toHTML(map, boardEl, document.createElement("div"))
+      );
+    }
   }
   // const map = document.querySelector("#map") as HTMLDivElement;
 
@@ -42,7 +50,6 @@ function draw() {
 function createNewMap() {
   map = MapService.createNewMap();
   map = MapService.addLayer("Basement", map);
-  debugger;
   map = MapService.addShape(map);
   draw();
 }
@@ -142,6 +149,8 @@ function scrollDown() {
   ) as HTMLButtonElement).addEventListener("click", () => {
     console.log(map);
   });
-
+  window.onresize = () => {
+    draw();
+  };
   draw();
 })();

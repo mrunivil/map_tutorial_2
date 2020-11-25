@@ -1,12 +1,29 @@
 * {
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+body {
+  width: 100%;
+  height: 100%;
 }
 #camera {
   border: 2px solid #c37531;
 }
-#map {
-  border: 2px solid #c7a5e0;
+#board {
+  min-width: 500px;
+  min-height: 500px;
+  width: 100%;
+  height: 100%;
+  background-color: #d4e1cf;
   position: relative;
+  overflow: hidden;
+}
+#map {
+  background-color: #699693;
+}
+#floor {
+  background-color: #7b5ea1;
 }
 .floor {
   background-color: #82aef0;

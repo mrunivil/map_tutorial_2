@@ -1,5 +1,3 @@
-import { Layer } from "./model/layer";
-import { LayerService } from "./layer.service";
 import { Shape, ShapeType } from "./model/shape";
 export abstract class ShapeService {
   static createNewShape(obj?: Partial<Shape>) {

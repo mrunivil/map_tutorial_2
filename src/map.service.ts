@@ -3,6 +3,8 @@ import { WifiMap } from "./model/wifi.map";
 import { LayerService } from "./layer.service";
 import { Shape } from "./model/shape";
 import { ShapeService } from "./shape.service";
+import { FloorService } from "./floor.service";
+import { CELL_SIZE, MAP_HEIGHT, MAP_WIDTH } from ".";
 
 export abstract class MapService {
   static currentLayer: Layer;
@@ -10,7 +12,45 @@ export abstract class MapService {
   static maxLayers: number = 0;
   static currentIndex: number = 0;
 
-  static toHTML(map: WifiMap) {}
+  static HORIZONTAL_PADDING: number = 0;
+  static VERTICAL_PADDING: number = 0;
+
+  static TOTAL_MAP_WIDTH: number = 0;
+  static TOTAL_MAP_HEIGHT: number = 0;
+
+  static toHTML(
+    map: WifiMap,
+    boardEl: HTMLElement,
+    targetEl: HTMLDivElement
+  ): HTMLDivElement {
+    MapService.TOTAL_MAP_WIDTH = MAP_WIDTH * CELL_SIZE;
+    MapService.TOTAL_MAP_HEIGHT = MAP_HEIGHT * CELL_SIZE;
+
+    MapService.HORIZONTAL_PADDING =
+      (boardEl.clientWidth - MapService.TOTAL_MAP_WIDTH) / 2;
+    MapService.VERTICAL_PADDING =
+      (boardEl.clientHeight - MapService.TOTAL_MAP_HEIGHT) / 2;
+    debugger;
+    targetEl.id = "map";
+    targetEl.style.width = `${MapService.TOTAL_MAP_WIDTH}px`;
+    targetEl.style.height = `${MapService.TOTAL_MAP_HEIGHT}px`;
+    targetEl.style.position = "absolute";
+    targetEl.style.left = `${MapService.HORIZONTAL_PADDING}px`;
+    targetEl.style.top = `${MapService.VERTICAL_PADDING}px`;
+
+    const floorEl = document.querySelector("floor") as HTMLDivElement;
+    if (!floorEl) {
+      targetEl.appendChild(
+        FloorService.toHTML(
+          MapService.currentLayer.floor,
+          document.createElement("div")
+        )
+      );
+    } else {
+      FloorService.toHTML(MapService.currentLayer.floor, floorEl);
+    }
+    return targetEl;
+  }
 
   static createNewMap() {
     return new WifiMap();
@@ -18,48 +58,52 @@ export abstract class MapService {
 
   static addLayer(name: string, map: WifiMap): WifiMap {
     map.layers.set(name, LayerService.createNewLayer(name));
-    this.maxLayers++;
-    this.assignCurrentLayer(map);
+    MapService.maxLayers++;
+    MapService.assignCurrentLayer(map);
     return map;
   }
 
   static addShape(map: WifiMap, shape?: Shape): WifiMap {
-    LayerService.addShape(
+    MapService.currentLayer = LayerService.addShape(
       ShapeService.createNewShape(shape),
-      this.currentLayer
+      MapService.currentLayer
     );
-    map.layers.set(this.currentLayerName, this.currentLayer);
+    map.layers.set(MapService.currentLayerName, MapService.currentLayer);
     return map;
   }
 
   static removeLayer(name: string, map: WifiMap): WifiMap {
     map.layers.delete(name);
-    this.maxLayers--;
-    this.assignCurrentLayer(map);
+    MapService.maxLayers--;
+    MapService.assignCurrentLayer(map);
     return map;
   }
 
   static nextLayer(map: WifiMap): WifiMap {
-    if (this.hasNextLayer()) {
-      this.currentIndex++;
-      this.assignCurrentLayer(map);
+    if (MapService.hasNextLayer()) {
+      MapService.currentIndex++;
+      MapService.assignCurrentLayer(map);
     }
+    return map;
   }
   static hasNextLayer() {
-    return this.currentIndex < this.maxLayers;
+    return MapService.currentIndex < MapService.maxLayers;
   }
   static previousLayer(map: WifiMap): WifiMap {
-    if (this.hasPreviousLayer()) {
-      this.currentIndex--;
-      this.assignCurrentLayer(map);
+    if (MapService.hasPreviousLayer()) {
+      MapService.currentIndex--;
+      MapService.assignCurrentLayer(map);
     }
+    return map;
   }
   static hasPreviousLayer() {
-    return this.currentIndex > -1;
+    return MapService.currentIndex > -1;
   }
   private static assignCurrentLayer(map: WifiMap) {
-    this.currentLayer = Array.from(map.layers.values())[this.currentIndex];
-    this.currentLayerName =
-      Array.from(map.layers.keys())[this.currentIndex] || "None";
+    MapService.currentLayer = Array.from(map.layers.values())[
+      MapService.currentIndex
+    ];
+    MapService.currentLayerName =
+      Array.from(map.layers.keys())[MapService.currentIndex] || "None";
   }
 }
