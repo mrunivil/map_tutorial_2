@@ -30,7 +30,7 @@ export abstract class MapService {
       (boardEl.clientWidth - MapService.TOTAL_MAP_WIDTH) / 2;
     MapService.VERTICAL_PADDING =
       (boardEl.clientHeight - MapService.TOTAL_MAP_HEIGHT) / 2;
-    debugger;
+
     targetEl.id = "map";
     targetEl.style.width = `${MapService.TOTAL_MAP_WIDTH}px`;
     targetEl.style.height = `${MapService.TOTAL_MAP_HEIGHT}px`;
@@ -38,16 +38,29 @@ export abstract class MapService {
     targetEl.style.left = `${MapService.HORIZONTAL_PADDING}px`;
     targetEl.style.top = `${MapService.VERTICAL_PADDING}px`;
 
-    const floorEl = document.querySelector("floor") as HTMLDivElement;
+    const floorEl = document.querySelector("#floor") as HTMLDivElement;
     if (!floorEl) {
       targetEl.appendChild(
         FloorService.toHTML(
           MapService.currentLayer.floor,
-          document.createElement("div")
+          FloorService.generateFloorElement()
         )
       );
     } else {
       FloorService.toHTML(MapService.currentLayer.floor, floorEl);
+    }
+    const roomsEl = document.querySelector(
+      `#${MapService.currentLayerName}`
+    ) as HTMLDivElement;
+    if (!roomsEl) {
+      targetEl.appendChild(
+        LayerService.toHTML(
+          MapService.currentLayer,
+          LayerService.generateLayerElement(MapService.currentLayerName)
+        )
+      );
+    } else {
+      LayerService.toHTML(MapService.currentLayer, roomsEl);
     }
     return targetEl;
   }

@@ -1,4 +1,5 @@
 import { FloorService } from "./floor.service";
+import { MapService } from "./map.service";
 import { Layer } from "./model/layer";
 import { Shape } from "./model/shape";
 import { detectCollision } from "./utility";
@@ -16,7 +17,18 @@ export abstract class LayerService {
     });
   }
 
-  static toHTML(layer: Layer) {}
+  static toHTML(layer: Layer, targetEl: HTMLDivElement): HTMLDivElement {
+    return targetEl;
+  }
+
+  static generateLayerElement(id: string) {
+    const targetEl = document.createElement("div");
+    targetEl.id = MapService.currentLayerName;
+    targetEl.style.width = `${MapService.TOTAL_MAP_WIDTH}px`;
+    targetEl.style.height = `${MapService.TOTAL_MAP_HEIGHT}px`;
+    targetEl.style.position = "absolute";
+    return targetEl;
+  }
 
   static addShape(shape: Shape, layer: Layer): Layer {
     if (this.canAddShape(shape, layer))

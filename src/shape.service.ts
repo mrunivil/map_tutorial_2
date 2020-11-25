@@ -1,14 +1,23 @@
-import { Shape, ShapeType } from "./model/shape";
+import { CELL_SIZE } from ".";
+import { Shape } from "./model/shape";
 export abstract class ShapeService {
   static createNewShape(obj?: Partial<Shape>) {
-    return new Shape(
-      obj || {
-        width: 1,
-        height: 1,
-        color: "lime",
-        type: ShapeType.floor
-      }
-    );
+    return new Shape(obj);
+  }
+
+  static toHTML(shape: Shape, targetEl: HTMLDivElement): HTMLDivElement {
+    targetEl.style.left = `${shape.x * CELL_SIZE}`;
+    targetEl.style.top = `${shape.y * CELL_SIZE}`;
+    return targetEl;
+  }
+
+  static generateShapeElement(id: string) {
+    const targetEl = document.createElement("div") as HTMLDivElement;
+    targetEl.id = id;
+    targetEl.style.width = `${CELL_SIZE}px`;
+    targetEl.style.height = `${CELL_SIZE}px`;
+    targetEl.style.position = "absolute";
+    return targetEl;
   }
 
   // static generateShapeDivs(shapes: Shape[]): HTMLDivElement[] {

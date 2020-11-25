@@ -4,7 +4,7 @@ import { WifiMap } from "./model/wifi.map";
 
 export const MAP_WIDTH = 9;
 export const MAP_HEIGHT = 16;
-export const CELL_SIZE = 32;
+export const CELL_SIZE = 48;
 
 let map: WifiMap;
 
@@ -50,7 +50,7 @@ function draw() {
 function createNewMap() {
   map = MapService.createNewMap();
   map = MapService.addLayer("Basement", map);
-  map = MapService.addShape(map);
+  map = MapService.addShape(map, new Shape({ name: "room_1" }));
   draw();
 }
 function removeShape(shape: Shape) {
