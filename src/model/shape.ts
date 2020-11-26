@@ -2,6 +2,19 @@ export enum ShapeType {
   "floor",
   "room"
 }
+export enum ShapeState {
+  "default" = "default",
+  "selected" = "selected",
+  "adding" = "adding",
+  "moving" = "moving",
+  "deleting" = "deleting",
+  "resizing" = "resizing"
+}
+export enum MenuState {
+  "menuHidden" = "menuHidden",
+  "menuVisible" = "menuVisible",
+  "menuOpened" = "menuOpened"
+}
 export class Shape {
   readonly name: string = "default";
   readonly x: number = 0;
@@ -10,7 +23,8 @@ export class Shape {
   readonly height: number = 1;
   readonly type: ShapeType = ShapeType.floor;
   readonly color: string = "#daeecd";
-  readonly selected: boolean = false;
+  readonly shapeState: ShapeState = ShapeState.default;
+  readonly menuState: MenuState = MenuState.menuHidden;
   readonly canAdd: {
     top: boolean;
     right: boolean;

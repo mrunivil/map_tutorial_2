@@ -3,7 +3,7 @@ import { ControlsService } from "./controls.service";
 import { FloorService } from "./floor.service";
 import { MapService } from "./map.service";
 import { Layer } from "./model/layer";
-import { Shape } from "./model/shape";
+import { MenuState, Shape, ShapeState } from "./model/shape";
 import { ShapeService } from "./shape.service";
 import { detectCollision } from "./utility";
 export abstract class LayerService {
@@ -78,7 +78,8 @@ export abstract class LayerService {
     for (let key of Array.from(MapService.currentLayer.shapes.keys())) {
       const shape = {
         ...MapService.currentLayer.shapes.get(key),
-        selected: false
+        shapeState: ShapeState.default,
+        menuState: MenuState.menuHidden
       } as Shape;
       MapService.currentLayer.shapes.set(key, shape);
       draw();

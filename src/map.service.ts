@@ -1,13 +1,14 @@
 import { Layer } from "./model/layer";
 import { WifiMap } from "./model/wifi.map";
 import { LayerService } from "./layer.service";
-import { Shape } from "./model/shape";
+import { MenuState, Shape, ShapeState } from "./model/shape";
 import { ShapeService } from "./shape.service";
 import { FloorService } from "./floor.service";
-import { CELL_SIZE, MAP_HEIGHT, MAP_WIDTH } from ".";
+import { CELL_SIZE, draw, MAP_HEIGHT, MAP_WIDTH } from ".";
 
 export abstract class MapService {
   static map: WifiMap;
+  static currentShape: Shape;
   static currentLayer: Layer;
   static currentLayerName: string;
   static maxLayers: number = 0;
@@ -88,6 +89,23 @@ export abstract class MapService {
     );
     this.map.layers.set(MapService.currentLayerName, MapService.currentLayer);
     return this.map;
+  }
+
+  static selectShape(shape: Shape) {
+    this.updateCurrentShape({
+      ...shape,
+      menuState: MenuState.menuVisible,
+      shapeState: ShapeState.selected
+    });
+  }
+
+  static updateCurrentShape(shape: Shape) {
+    this.currentShape = {
+      ...shape
+    };
+    this.currentLayer.shapes.set(this.currentShape.name, this.currentShape);
+    this.assignCurrentLayer();
+    draw();
   }
 
   static removeLayer(name: string): WifiMap {

@@ -1,7 +1,7 @@
 import { draw } from ".";
 import { ControlsService } from "./controls.service";
 import { MapService } from "./map.service";
-import { Shape, ShapeType } from "./model/shape";
+import { MenuState, Shape, ShapeState, ShapeType } from "./model/shape";
 import { RoomShapeRenderer } from "./renderer/room.shape.renderer";
 export abstract class ShapeService {
   private static renderer = new RoomShapeRenderer();
@@ -23,37 +23,52 @@ export abstract class ShapeService {
     targetEl.style.position = "absolute";
     if (shape.type === ShapeType.room) {
       targetEl.classList.add("room");
-      this.generateControls(targetEl);
+      this.generateControls(shape, targetEl);
       ControlsService.registerClickListener(targetEl, (evt: Event) => {
-        MapService.currentLayer.shapes.set(shape.name, {
-          ...shape,
-          selected: !shape.selected
-        });
-        MapService.updateLayer();
+        MapService.selectShape(shape);
         evt.stopImmediatePropagation();
-        draw();
       });
     }
     return targetEl;
   }
 
-  private static generateControls(targetEl: HTMLElement) {
+  private static generateControls(shape: Shape, targetEl: HTMLElement) {
+    this.generateControlsAdding(shape, targetEl);
+    this.generateControlsSelected(shape, targetEl);
+  }
+  private static generateControlsSelected(shape: Shape, targetEl: HTMLElement) {
+    const menuControl = document.createElement("div");
+    const menuOptions = document.createElement("div");
+    menuOptions.classList.add("room-control", "menu-options");
+    menuControl.classList.add("room-control", "menu-control");
+    ControlsService.registerClickListener(menuControl, (evt: Event) => {
+      debugger;
+      if (shape.menuState === MenuState.menuHidden) {
+        MapService.currentLayer.shapes.set(shape.name, {
+          ...shape,
+          menuState: MenuState.menuVisible
+        });
+      } else {
+        MapService.currentLayer.shapes.set(shape.name, {
+          ...shape,
+          menuState: MenuState.menuHidden
+        });
+      }
+      MapService.updateLayer();
+      evt.stopImmediatePropagation();
+      draw();
+    });
+    targetEl.appendChild(menuControl);
+  }
+  private static generateControlsAdding(shape: Shape, targetEl: HTMLElement) {
     const addTop = document.createElement("div");
     const addBottom = document.createElement("div");
     const addRight = document.createElement("div");
     const addLeft = document.createElement("div");
-    const img = new Image();
-    img.onload = () => {
-      addTop.style.backgroundImage = `url("${img.src}")`;
-      addBottom.style.backgroundImage = `url("${img.src}")`;
-      addRight.style.backgroundImage = `url("${img.src}")`;
-      addLeft.style.backgroundImage = `url("${img.src}")`;
-    };
-    img.src = "./assets/add.top.svg";
-    addTop.classList.add("room-control", "top");
-    addBottom.classList.add("room-control", "bottom");
-    addRight.classList.add("room-control", "right");
-    addLeft.classList.add("room-control", "left");
+    addTop.classList.add("room-control", "adding", "top");
+    addBottom.classList.add("room-control", "adding", "bottom");
+    addRight.classList.add("room-control", "adding", "right");
+    addLeft.classList.add("room-control", "adding", "left");
     targetEl.appendChild(addTop);
     targetEl.appendChild(addBottom);
     targetEl.appendChild(addRight);
