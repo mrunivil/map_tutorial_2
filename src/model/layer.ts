@@ -6,9 +6,9 @@ export class Layer {
   readonly width?: number;
   readonly height?: number;
   readonly floor: Floor = new Floor({ width: 10, height: 10 });
-  readonly shapes: Shape[];
+  readonly shapes: Map<string, Shape>;
   constructor(obj: Partial<Layer>) {
     Object.assign(this, obj);
-    this.shapes = obj.shapes || [];
+    this.shapes = obj.shapes || new Map();
   }
 }

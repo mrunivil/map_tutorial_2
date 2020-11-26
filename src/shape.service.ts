@@ -1,22 +1,30 @@
-import { CELL_SIZE } from ".";
-import { Shape } from "./model/shape";
+import { ControlsService } from "./controls.service";
+import { Shape, ShapeType } from "./model/shape";
+import { RoomShapeRenderer } from "./renderer/room.shape.renderer";
 export abstract class ShapeService {
+  private static renderer = new RoomShapeRenderer();
+
   static createNewShape(obj?: Partial<Shape>) {
     return new Shape(obj);
   }
 
-  static toHTML(shape: Shape, targetEl: HTMLDivElement): HTMLDivElement {
-    targetEl.style.left = `${shape.x * CELL_SIZE}`;
-    targetEl.style.top = `${shape.y * CELL_SIZE}`;
+  static toHTML(shape: Shape, targetEl: HTMLDivElement): HTMLElement {
+    if (shape.type === ShapeType.room) {
+      return this.renderer.renderShape(shape, targetEl);
+    }
     return targetEl;
   }
 
-  static generateShapeElement(id: string) {
+  static generateShapeElement(shape: Shape) {
     const targetEl = document.createElement("div") as HTMLDivElement;
-    targetEl.id = id;
-    targetEl.style.width = `${CELL_SIZE}px`;
-    targetEl.style.height = `${CELL_SIZE}px`;
+    targetEl.id = shape.name;
     targetEl.style.position = "absolute";
+    if (shape.type === ShapeType.room) {
+      targetEl.classList.add("room");
+      targetEl.addEventListener("click", (evt) => {
+        ControlsService.handleClick(shape, evt);
+      });
+    }
     return targetEl;
   }
 

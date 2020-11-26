@@ -1,144 +1,65 @@
 import { MapService } from "./map.service";
-import { Shape } from "./model/shape";
-import { WifiMap } from "./model/wifi.map";
+import { Shape, ShapeType } from "./model/shape";
 
-export const MAP_WIDTH = 9;
-export const MAP_HEIGHT = 16;
-export const CELL_SIZE = 48;
+export const MAP_WIDTH = 4;
+export const MAP_HEIGHT = 8;
+export const CELL_SIZE = 64;
 
-let map: WifiMap;
+export const debug = true;
 
-// let viewPort = new ViewPort({ x: MAP_WIDTH / 2, y: MAP_HEIGHT / 2 });
-// const layers: Map<string, Layer> = new Map();
-// let selectedLayer: Layer;
+let boardEl: HTMLDivElement | null;
 
-function cleanUp(map: HTMLDivElement) {
-  // const currentCamera = document.querySelector("#camera");
-  // if (currentCamera) {
-  //   map.removeChild(currentCamera);
-  // }
-  // document.querySelectorAll(".layer").forEach((layer) => {
-  //   map.removeChild(layer);
-  // });
-}
-function draw() {
-  if (map) {
+export function draw() {
+  if (MapService.map) {
     const labelCurrentLayer = document.querySelector(
       "#currentLayer"
     ) as HTMLParagraphElement;
     labelCurrentLayer.innerHTML = MapService.currentLayer.name || "no";
+    if (!boardEl) {
+      boardEl = document.querySelector("#board") as HTMLDivElement;
+      document.body.appendChild(boardEl);
+    }
 
-    const boardEl = document.querySelector("#board") as HTMLDivElement;
     const mapEl = document.querySelector("#map") as HTMLDivElement;
     if (mapEl) {
-      MapService.toHTML(map, boardEl, mapEl);
+      MapService.toHTML(MapService.map, boardEl, mapEl);
     } else {
       boardEl.appendChild(
-        MapService.toHTML(map, boardEl, document.createElement("div"))
+        MapService.toHTML(
+          MapService.map,
+          boardEl,
+          document.createElement("div")
+        )
       );
     }
   }
-  // const map = document.querySelector("#map") as HTMLDivElement;
-
-  // cleanUp(map);
-  // for (let layer of Array.from(layers.values())) {
-  //   map.appendChild(LayerService.generateLayer(layer));
-  // }
-  // const camera = ViewportService.generateViewport(viewPort);
-  // map.appendChild(camera);
 }
 function createNewMap() {
-  map = MapService.createNewMap();
-  map = MapService.addLayer("Basement", map);
-  map = MapService.addShape(map, new Shape({ name: "room_1" }));
+  MapService.createNewMap();
+  MapService.addLayer("Basement");
+  MapService.addShape(
+    new Shape({
+      name: "room_1",
+      color: "#a0e3bf",
+      width: 2,
+      height: 2,
+      type: ShapeType.room,
+      x: Math.floor(MAP_WIDTH / 2 - 1),
+      y: MAP_HEIGHT / 2 - 1
+    })
+  );
   draw();
 }
-function removeShape(shape: Shape) {
+function create(selector?: string) {
+  if (selector) {
+    boardEl = document.querySelector(selector);
+  }
+  window.onresize = () => {
+    draw();
+  };
   draw();
 }
-function addNewShape(shape: Shape) {
-  draw();
-}
-function previousLayer() {}
-function nextLayer() {}
-function addLayer() {
-  draw();
-}
-function zoomIn() {
-  // viewPort = ViewportService.zoomIn(viewPort);
-  draw();
-}
-function zoomOut() {
-  // viewPort = ViewportService.zoomOut(viewPort);
-  draw();
-}
-function scrollLeft() {
-  // viewPort = ViewportService.moveLeft(viewPort);
-  draw();
-}
-function scrollUp() {
-  // viewPort = ViewportService.moveUp(viewPort);
-  draw();
-}
-function scrollRight() {
-  // viewPort = ViewportService.moveRight(viewPort);
-  draw();
-}
-function scrollDown() {
-  // viewPort = ViewportService.moveDown(viewPort);
-  draw();
-}
-
 (() => {
-  // const map = document.querySelector("#map") as HTMLDivElement;
-  // map.style.width = `${MAP_WIDTH}px`;
-  // map.style.height = `${MAP_HEIGHT}px`;
-  // addLayer();
-  // addNewShape(
-  //   new Shape({
-  //     x: 5,
-  //     y: 5,
-  //     width: 2,
-  //     height: 2,
-  //     color: "red"
-  //   })
-  // );
-
-  // setTimeout(() => {
-  //   console.log("removing shape");
-  //   removeShape(selectedLayer.shapes[0]);
-  // }, 2500);
-
-  // (document.querySelector(
-  //   "#btn_zoom_in"
-  // ) as HTMLButtonElement).addEventListener("click", () => {
-  //   zoomIn();
-  // });
-  // (document.querySelector(
-  //   "#btn_zoom_out"
-  // ) as HTMLButtonElement).addEventListener("click", () => {
-  //   zoomOut();
-  // });
-  // (document.querySelector(
-  //   "#btn_scroll_up"
-  // ) as HTMLButtonElement).addEventListener("click", () => {
-  //   scrollUp();
-  // });
-  // (document.querySelector(
-  //   "#btn_scroll_down"
-  // ) as HTMLButtonElement).addEventListener("click", () => {
-  //   scrollDown();
-  // });
-  // (document.querySelector(
-  //   "#btn_scroll_right"
-  // ) as HTMLButtonElement).addEventListener("click", () => {
-  //   scrollRight();
-  // });
-  // (document.querySelector(
-  //   "#btn_scroll_left"
-  // ) as HTMLButtonElement).addEventListener("click", () => {
-  //   scrollLeft();
-  // });
   (document.querySelector(
     "#btn_new_map"
   ) as HTMLButtonElement).addEventListener("click", () => {
@@ -147,10 +68,7 @@ function scrollDown() {
   (document.querySelector(
     "#btn_log_model"
   ) as HTMLButtonElement).addEventListener("click", () => {
-    console.log(map);
+    console.log(MapService.map);
   });
-  window.onresize = () => {
-    draw();
-  };
-  draw();
+  create("#board");
 })();

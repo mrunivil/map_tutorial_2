@@ -2,7 +2,10 @@ import { Floor } from "./model/floor";
 import { MAP_WIDTH, MAP_HEIGHT } from "./index";
 import { ShapeService } from "./shape.service";
 import { MapService } from "./map.service";
+import { FloorShapeRenderer } from "./renderer/floor.shape.renderer";
 export abstract class FloorService {
+  private static renderer = new FloorShapeRenderer();
+
   static createNewFloor() {
     const floor = new Floor({
       width: MAP_WIDTH,
@@ -26,9 +29,9 @@ export abstract class FloorService {
     for (let s of floor.shapes) {
       let shapeEl = document.querySelector(`#${s.name}`) as HTMLDivElement;
       if (!shapeEl) {
-        const html = ShapeService.toHTML(
+        const html = this.renderer.renderShape(
           s,
-          ShapeService.generateShapeElement(s.name)
+          ShapeService.generateShapeElement(s)
         );
         html.classList.add("floor-shape");
         targetEl.appendChild(html);

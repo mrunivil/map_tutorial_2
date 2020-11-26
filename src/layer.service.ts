@@ -1,7 +1,10 @@
+import { draw } from ".";
+import { ControlsService } from "./controls.service";
 import { FloorService } from "./floor.service";
 import { MapService } from "./map.service";
 import { Layer } from "./model/layer";
 import { Shape } from "./model/shape";
+import { ShapeService } from "./shape.service";
 import { detectCollision } from "./utility";
 export abstract class LayerService {
   static readonly width = 10;
@@ -12,17 +15,29 @@ export abstract class LayerService {
       height: this.height,
       width: this.width,
       name,
-      shapes: [],
+      shapes: new Map(),
       floor: FloorService.createNewFloor()
     });
   }
 
   static toHTML(layer: Layer, targetEl: HTMLDivElement): HTMLDivElement {
+    layer.shapes.forEach((shape) => {
+      let shapeEl = document.querySelector(`#${shape.name}`) as HTMLDivElement;
+      if (!shapeEl) {
+        shapeEl = ShapeService.generateShapeElement(shape);
+        targetEl.appendChild(ShapeService.toHTML(shape, shapeEl));
+      } else {
+        shapeEl = ShapeService.toHTML(shape, shapeEl);
+      }
+    });
     return targetEl;
   }
 
   static generateLayerElement(id: string) {
     const targetEl = document.createElement("div");
+    ControlsService.registerClickListener(targetEl, () => {
+      this.clearSelection();
+    });
     targetEl.id = MapService.currentLayerName;
     targetEl.style.width = `${MapService.TOTAL_MAP_WIDTH}px`;
     targetEl.style.height = `${MapService.TOTAL_MAP_HEIGHT}px`;
@@ -30,10 +45,9 @@ export abstract class LayerService {
     return targetEl;
   }
 
-  static addShape(shape: Shape, layer: Layer): Layer {
+  static addShape(shape: Shape, layer: Layer): void {
     if (this.canAddShape(shape, layer))
-      return { ...layer, shapes: [...layer.shapes, shape] };
-    return layer;
+      MapService.currentLayer.shapes.set(shape.name, shape);
   }
   static removeShape(shape: Shape, layer: Layer) {}
   static canAddShape(shape: Shape, layer: Layer): boolean {
@@ -43,6 +57,17 @@ export abstract class LayerService {
   static canAddShapeRight(shape: Shape, layer: Layer) {}
   static canAddShapeBottom(shape: Shape, layer: Layer) {}
   static canAddShapeLeft(shape: Shape, layer: Layer) {}
+
+  static clearSelection() {
+    for (let key of Array.from(MapService.currentLayer.shapes.keys())) {
+      const shape = {
+        ...MapService.currentLayer.shapes.get(key),
+        selected: false
+      } as Shape;
+      MapService.currentLayer.shapes.set(key, shape);
+      draw();
+    }
+  }
   // static generateLayer(layer: Layer) {
   //   const floorDiv = this.generateLayerDiv(layer);
   //   return floorDiv;

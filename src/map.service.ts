@@ -7,6 +7,7 @@ import { FloorService } from "./floor.service";
 import { CELL_SIZE, MAP_HEIGHT, MAP_WIDTH } from ".";
 
 export abstract class MapService {
+  static map: WifiMap;
   static currentLayer: Layer;
   static currentLayerName: string;
   static maxLayers: number = 0;
@@ -66,57 +67,61 @@ export abstract class MapService {
   }
 
   static createNewMap() {
-    return new WifiMap();
+    this.map = new WifiMap();
   }
 
-  static addLayer(name: string, map: WifiMap): WifiMap {
-    map.layers.set(name, LayerService.createNewLayer(name));
+  static addLayer(name: string): WifiMap {
+    this.map.layers.set(name, LayerService.createNewLayer(name));
     MapService.maxLayers++;
-    MapService.assignCurrentLayer(map);
-    return map;
+    MapService.assignCurrentLayer();
+    return this.map;
   }
 
-  static addShape(map: WifiMap, shape?: Shape): WifiMap {
-    MapService.currentLayer = LayerService.addShape(
+  static updateLayer() {
+    this.map.layers.set(MapService.currentLayerName, MapService.currentLayer);
+  }
+
+  static addShape(shape?: Shape): WifiMap {
+    LayerService.addShape(
       ShapeService.createNewShape(shape),
       MapService.currentLayer
     );
-    map.layers.set(MapService.currentLayerName, MapService.currentLayer);
-    return map;
+    this.map.layers.set(MapService.currentLayerName, MapService.currentLayer);
+    return this.map;
   }
 
-  static removeLayer(name: string, map: WifiMap): WifiMap {
-    map.layers.delete(name);
+  static removeLayer(name: string): WifiMap {
+    this.map.layers.delete(name);
     MapService.maxLayers--;
-    MapService.assignCurrentLayer(map);
-    return map;
+    MapService.assignCurrentLayer();
+    return this.map;
   }
 
-  static nextLayer(map: WifiMap): WifiMap {
+  static nextLayer(): WifiMap {
     if (MapService.hasNextLayer()) {
       MapService.currentIndex++;
-      MapService.assignCurrentLayer(map);
+      MapService.assignCurrentLayer();
     }
-    return map;
+    return this.map;
   }
   static hasNextLayer() {
     return MapService.currentIndex < MapService.maxLayers;
   }
-  static previousLayer(map: WifiMap): WifiMap {
+  static previousLayer(): WifiMap {
     if (MapService.hasPreviousLayer()) {
       MapService.currentIndex--;
-      MapService.assignCurrentLayer(map);
+      MapService.assignCurrentLayer();
     }
-    return map;
+    return this.map;
   }
   static hasPreviousLayer() {
     return MapService.currentIndex > -1;
   }
-  private static assignCurrentLayer(map: WifiMap) {
-    MapService.currentLayer = Array.from(map.layers.values())[
+  private static assignCurrentLayer() {
+    MapService.currentLayer = Array.from(this.map.layers.values())[
       MapService.currentIndex
     ];
     MapService.currentLayerName =
-      Array.from(map.layers.keys())[MapService.currentIndex] || "None";
+      Array.from(this.map.layers.keys())[MapService.currentIndex] || "None";
   }
 }
