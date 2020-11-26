@@ -22,7 +22,7 @@ export abstract class LayerService {
 
   static toHTML(layer: Layer, targetEl: HTMLDivElement): HTMLDivElement {
     layer.shapes.forEach((shape) => {
-      let shapeEl = document.querySelector(`#${shape.name}`) as HTMLDivElement;
+      let shapeEl = document.querySelector(`#${shape.name}`) as HTMLElement;
       if (!shapeEl) {
         shapeEl = ShapeService.generateShapeElement(shape);
         targetEl.appendChild(ShapeService.toHTML(shape, shapeEl));
@@ -47,16 +47,32 @@ export abstract class LayerService {
 
   static addShape(shape: Shape, layer: Layer): void {
     if (this.canAddShape(shape, layer))
-      MapService.currentLayer.shapes.set(shape.name, shape);
+      MapService.currentLayer.shapes.set(shape.name, {
+        ...shape,
+        canAdd: {
+          top: this.canAddShapeTop(shape, layer),
+          right: this.canAddShapeRight(shape, layer),
+          bottom: this.canAddShapeBottom(shape, layer),
+          left: this.canAddShapeLeft(shape, layer)
+        }
+      });
   }
   static removeShape(shape: Shape, layer: Layer) {}
   static canAddShape(shape: Shape, layer: Layer): boolean {
     return !detectCollision(shape, layer);
   }
-  static canAddShapeTop(shape: Shape, layer: Layer) {}
-  static canAddShapeRight(shape: Shape, layer: Layer) {}
-  static canAddShapeBottom(shape: Shape, layer: Layer) {}
-  static canAddShapeLeft(shape: Shape, layer: Layer) {}
+  static canAddShapeTop(shape: Shape, layer: Layer) {
+    return !detectCollision({ ...shape, y: shape.y - 2 }, layer);
+  }
+  static canAddShapeRight(shape: Shape, layer: Layer) {
+    return !detectCollision({ ...shape, x: shape.y + 2 }, layer);
+  }
+  static canAddShapeBottom(shape: Shape, layer: Layer) {
+    return !detectCollision({ ...shape, y: shape.y + 2 }, layer);
+  }
+  static canAddShapeLeft(shape: Shape, layer: Layer) {
+    return !detectCollision({ ...shape, x: shape.y - 2 }, layer);
+  }
 
   static clearSelection() {
     for (let key of Array.from(MapService.currentLayer.shapes.keys())) {
@@ -68,67 +84,4 @@ export abstract class LayerService {
       draw();
     }
   }
-  // static generateLayer(layer: Layer) {
-  //   const floorDiv = this.generateLayerDiv(layer);
-  //   return floorDiv;
-  // }
-
-  // static generateShape(layer: Layer, shape: Shape): Layer {
-  //   return new Layer({ ...layer, shapes: [...layer.shapes, shape] });
-  // }
-
-  // private static generateLayerDiv(layer: Layer) {
-  //   const floorDiv = document.createElement("div");
-  //   const layerWidth = (layer.floor.width || 0) * this.cellSize;
-  //   const layerHeight = (layer.floor.height || 0) * this.cellSize;
-  //   const left = MAP_WIDTH / 2 - layerWidth / 2;
-  //   const top = MAP_HEIGHT / 2 - layerHeight / 2;
-  //   floorDiv.classList.add("layer", "floor");
-  //   floorDiv.style.width = `${layerWidth}`;
-  //   floorDiv.style.height = `${layerHeight}`;
-  //   floorDiv.style.position = "absolute";
-  //   floorDiv.style.left = `${left}px`;
-  //   floorDiv.style.top = `${top}px`;
-  //   for (let i = 0; i < layer.floor.shapes.length; i++) {
-  //     const shape = document.createElement("div");
-  //     shape.style.width = `${LayerService.cellSize}px`;
-  //     shape.style.height = `${LayerService.cellSize}px`;
-  //     shape.classList.add("floorShape");
-  //     shape.style.position = "absolute";
-  //     shape.style.left = `${
-  //       (layer.floor.shapes[i].x || 0) * LayerService.cellSize
-  //     }px`;
-  //     shape.style.top = `${
-  //       (layer.floor.shapes[i].y || 0) * LayerService.cellSize
-  //     }px`;
-  //     floorDiv.appendChild(shape);
-  //   }
-  //   for (const shape of ShapeService.generateShapeDivs(layer.shapes)) {
-  //     floorDiv.appendChild(shape);
-  //   }
-
-  //   return floorDiv;
-  // }
-
-  // static generateFloor(layer: Layer) {
-  //   const floorShapes = [];
-  //   for (
-  //     let i = 0;
-  //     i < (layer.floor.width || 0) * (layer.floor.height || 0);
-  //     i++
-  //   ) {
-  //     const row = Math.floor(i / (layer.floor.height || 1));
-  //     const col = (i - row) % (layer.floor.width || 1);
-  //     floorShapes.push(
-  //       new Shape({
-  //         height: 1,
-  //         width: 1,
-  //         x: col,
-  //         y: row,
-  //         color: "#bceff6"
-  //       })
-  //     );
-  //   }
-  //   return { ...layer.floor, shapes: floorShapes };
-  // }
 }

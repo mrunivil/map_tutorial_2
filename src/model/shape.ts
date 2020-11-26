@@ -9,8 +9,14 @@ export class Shape {
   readonly width: number = 1;
   readonly height: number = 1;
   readonly type: ShapeType = ShapeType.floor;
-  readonly color: string = "#1ecbe1";
+  readonly color: string = "#daeecd";
   readonly selected: boolean = false;
+  readonly canAdd: {
+    top: boolean;
+    right: boolean;
+    bottom: boolean;
+    left: boolean;
+  } = { top: true, right: true, bottom: true, left: true };
   constructor(obj?: Partial<Shape>) {
     Object.assign(this, obj);
   }

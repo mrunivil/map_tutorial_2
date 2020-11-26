@@ -1,3 +1,7 @@
+:root {
+  --color-room-select: #333333;
+  --room-control-hover: brightness(1.5);
+}
 * {
   box-sizing: border-box;
   padding: 0;
@@ -22,9 +26,38 @@ body {
   background-color: #699693;
 }
 #floor {
-  background-color: #7b5ea1;
+  background-color: #bced9d;
 }
-.room.selected {
+.room-control {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: url("./assets/add.top.svg");
+  background-size: cover;
+  display: none;
+}
+.room-control.top {
+  left: 50%;
+  top: 0%;
+  transform: translateX(-50%) translateY(calc(-100% - 8px));
+}
+.room-control.bottom {
+  left: 50%;
+  bottom: 0%;
+  transform: translateX(-50%) translateY(calc(100% + 8px));
+}
+.room-control.left {
+  left: 0%;
+  top: 50%;
+  transform: translateY(-50%) translateX(calc(-100% - 8px));
+}
+.room-control.right {
+  right: 0px;
+  top: 50%;
+  transform: translateY(-50%) translateX(calc(100% + 8px));
+}
+.room-control:active {
+  filter: var(--room-control-hover);
 }
 .floor {
   background-color: #82aef0;

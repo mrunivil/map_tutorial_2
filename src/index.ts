@@ -40,7 +40,7 @@ function createNewMap() {
   MapService.addShape(
     new Shape({
       name: "room_1",
-      color: "#a0e3bf",
+      color: "#ce9ded",
       width: 2,
       height: 2,
       type: ShapeType.room,
