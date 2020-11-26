@@ -1,9 +1,10 @@
+import { LayerService } from "./layer.service";
 import { MapService } from "./map.service";
 import { Shape, ShapeType } from "./model/shape";
 
-export const MAP_WIDTH = 4;
-export const MAP_HEIGHT = 8;
-export const CELL_SIZE = 64;
+export const MAP_WIDTH = 9;
+export const MAP_HEIGHT = 16;
+export const CELL_SIZE = 32;
 
 export const debug = true;
 
@@ -39,7 +40,6 @@ function createNewMap() {
   MapService.addLayer("Basement");
   MapService.addShape(
     new Shape({
-      name: "room_1",
       color: "#ce9ded",
       width: 2,
       height: 2,
@@ -48,7 +48,6 @@ function createNewMap() {
       y: MAP_HEIGHT / 2 - 1
     })
   );
-  draw();
 }
 function create(selector?: string) {
   if (selector) {

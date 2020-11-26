@@ -1,3 +1,4 @@
+@import "./menu.css";
 :root {
   --color-room-select: #333333;
   --room-control-hover: brightness(1.5);
@@ -28,60 +29,19 @@ body {
 #floor {
   background-color: #bced9d;
 }
+.room {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .room-control {
-  position: absolute;
   width: 32px;
   height: 32px;
   background: url("./assets/add.top.svg");
   background-size: cover;
-  display: none;
+  z-index: 5;
 }
-.room.selected > .menu-control {
-  display: block;
-}
-.menu-control {
-  background: url("./assets/menu.svg");
-  background-size: cover;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  display: none;
-}
-.menu-options {
-  display: none;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  display: flex;
-  flex-direction: column;
-}
-.menu-option {
-  background: url("./assets/menu.svg");
-  background-size: cover;
-  width: 32px;
-  height: 32px;
-  transform: translateX(-50%) translateY(-50%);
-}
-.room-control.top {
-  left: 50%;
-  top: 0%;
-  transform: translateX(-50%) translateY(calc(-100% - 8px));
-}
-.room-control.bottom {
-  left: 50%;
-  bottom: 0%;
-  transform: translateX(-50%) translateY(calc(100% + 8px));
-}
-.room-control.left {
-  left: 0%;
-  top: 50%;
-  transform: translateY(-50%) translateX(calc(-100% - 8px));
-}
-.room-control.right {
-  right: 0px;
-  top: 50%;
-  transform: translateY(-50%) translateX(calc(100% + 8px));
-}
+
 .room-control:active {
   filter: var(--room-control-hover);
 }

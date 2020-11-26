@@ -1,12 +1,16 @@
-import { Layer } from "./model/layer";
-import { WifiMap } from "./model/wifi.map";
-import { LayerService } from "./layer.service";
-import { MenuState, Shape, ShapeState } from "./model/shape";
-import { ShapeService } from "./shape.service";
-import { FloorService } from "./floor.service";
 import { CELL_SIZE, draw, MAP_HEIGHT, MAP_WIDTH } from ".";
+import { FloorService } from "./floor.service";
+import { LayerService } from "./layer.service";
+import { Layer } from "./model/layer";
+import { MenuState, Shape, ShapeState } from "./model/shape";
+import { WifiMap } from "./model/wifi.map";
 
 export abstract class MapService {
+  private static id = 0;
+  static ID = () => {
+    MapService.id++;
+    return MapService.id;
+  };
   static map: WifiMap;
   static currentShape: Shape;
   static currentLayer: Layer;
@@ -82,19 +86,46 @@ export abstract class MapService {
     this.map.layers.set(MapService.currentLayerName, MapService.currentLayer);
   }
 
-  static addShape(shape?: Shape): WifiMap {
-    LayerService.addShape(
-      ShapeService.createNewShape(shape),
-      MapService.currentLayer
-    );
-    this.map.layers.set(MapService.currentLayerName, MapService.currentLayer);
-    return this.map;
-  }
+  static addShape(shape: Shape) {
+    if (LayerService.canAddShape(shape, MapService.currentLayer)) {
+      const newShape = {
+        ...shape,
+        name: `room_${MapService.ID()}`,
+        canAdd: {
+          top: LayerService.canAddShapeTop(shape, MapService.currentLayer),
+          right: LayerService.canAddShapeRight(shape, MapService.currentLayer),
+          bottom: LayerService.canAddShapeBottom(
+            shape,
+            MapService.currentLayer
+          ),
+          left: LayerService.canAddShapeLeft(shape, MapService.currentLayer)
+        }
+      };
+      MapService.currentLayer.shapes.set(newShape.name, newShape);
+      this.assignCurrentLayer();
+      for (let key of Array.from(MapService.currentLayer.shapes.keys())) {
+        let currentShape = MapService.currentLayer.shapes.get(key) as Shape;
+        const currentLayer = MapService.currentLayer;
+        currentShape = {
+          ...currentShape,
+          canAdd: {
+            top: LayerService.canAddShapeTop(currentShape, currentLayer),
+            right: LayerService.canAddShapeRight(currentShape, currentLayer),
+            bottom: LayerService.canAddShapeBottom(currentShape, currentLayer),
+            left: LayerService.canAddShapeLeft(currentShape, currentLayer)
+          }
+        };
+        MapService.currentLayer.shapes.set(currentShape.name, currentShape);
+      }
 
+      draw();
+    }
+  }
   static selectShape(shape: Shape) {
+    this.clearSelection();
     this.updateCurrentShape({
       ...shape,
-      menuState: MenuState.menuVisible,
+      menuState: MenuState.menuOpened,
       shapeState: ShapeState.selected
     });
   }
@@ -141,5 +172,16 @@ export abstract class MapService {
     ];
     MapService.currentLayerName =
       Array.from(this.map.layers.keys())[MapService.currentIndex] || "None";
+  }
+  static clearSelection() {
+    for (let key of Array.from(MapService.currentLayer.shapes.keys())) {
+      const shape = {
+        ...MapService.currentLayer.shapes.get(key),
+        shapeState: ShapeState.default,
+        menuState: MenuState.menuHidden
+      } as Shape;
+      MapService.currentLayer.shapes.set(key, shape);
+      draw();
+    }
   }
 }

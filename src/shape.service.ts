@@ -1,4 +1,3 @@
-import { draw } from ".";
 import { ControlsService } from "./controls.service";
 import { MapService } from "./map.service";
 import { MenuState, Shape, ShapeState, ShapeType } from "./model/shape";
@@ -26,7 +25,6 @@ export abstract class ShapeService {
       this.generateControls(shape, targetEl);
       ControlsService.registerClickListener(targetEl, (evt: Event) => {
         MapService.selectShape(shape);
-        evt.stopImmediatePropagation();
       });
     }
     return targetEl;
@@ -37,38 +35,57 @@ export abstract class ShapeService {
     this.generateControlsSelected(shape, targetEl);
   }
   private static generateControlsSelected(shape: Shape, targetEl: HTMLElement) {
-    const menuControl = document.createElement("div");
-    const menuOptions = document.createElement("div");
-    menuOptions.classList.add("room-control", "menu-options");
-    menuControl.classList.add("room-control", "menu-control");
-    ControlsService.registerClickListener(menuControl, (evt: Event) => {
-      debugger;
-      if (shape.menuState === MenuState.menuHidden) {
-        MapService.currentLayer.shapes.set(shape.name, {
-          ...shape,
-          menuState: MenuState.menuVisible
-        });
-      } else {
-        MapService.currentLayer.shapes.set(shape.name, {
-          ...shape,
+    const menuEl = document.createElement("div");
+    menuEl.classList.add("menu");
+    const menuControlEl = document.createElement("div");
+    menuControlEl.classList.add("menu-control", "room-control");
+    const menuOptionsEl = document.createElement("div");
+    menuOptionsEl.classList.add("menu-options");
+    const addShapeMenuOptionEl = document.createElement("div");
+    addShapeMenuOptionEl.classList.add("menu-option", "room-control");
+    addShapeMenuOptionEl.style.backgroundImage = 'url("./assets/add.top.svg")';
+    menuOptionsEl.appendChild(addShapeMenuOptionEl);
+    menuEl.append(menuOptionsEl, menuControlEl);
+    targetEl.append(menuEl);
+
+    ControlsService.registerClickListener(
+      addShapeMenuOptionEl,
+      (evt: Event) => {
+        MapService.updateCurrentShape({
+          ...MapService.currentShape,
+          shapeState: ShapeState.adding,
           menuState: MenuState.menuHidden
         });
       }
-      MapService.updateLayer();
-      evt.stopImmediatePropagation();
-      draw();
+    );
+
+    ControlsService.registerClickListener(menuControlEl, (evt: Event) => {
+      if (MapService.currentShape.menuState === MenuState.menuOpened) {
+        MapService.updateCurrentShape({
+          ...MapService.currentShape,
+          menuState: MenuState.menuVisible
+        });
+      } else {
+        MapService.updateCurrentShape({
+          ...MapService.currentShape,
+          menuState: MenuState.menuOpened
+        });
+      }
     });
-    targetEl.appendChild(menuControl);
+    return targetEl;
   }
   private static generateControlsAdding(shape: Shape, targetEl: HTMLElement) {
     const addTop = document.createElement("div");
+    ControlsService.registerClickListener(addTop, (evt: Event) => {
+      MapService.addShape({ ...shape, height: 2, width: 2, y: shape.y - 2 });
+    });
     const addBottom = document.createElement("div");
     const addRight = document.createElement("div");
     const addLeft = document.createElement("div");
-    addTop.classList.add("room-control", "adding", "top");
-    addBottom.classList.add("room-control", "adding", "bottom");
-    addRight.classList.add("room-control", "adding", "right");
-    addLeft.classList.add("room-control", "adding", "left");
+    addTop.classList.add("room-control", "menu-option", "adding", "top");
+    addBottom.classList.add("room-control", "menu-option", "adding", "bottom");
+    addRight.classList.add("room-control", "menu-option", "adding", "right");
+    addLeft.classList.add("room-control", "menu-option", "adding", "left");
     targetEl.appendChild(addTop);
     targetEl.appendChild(addBottom);
     targetEl.appendChild(addRight);

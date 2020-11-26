@@ -1,0 +1,66 @@
+.menu {
+  display: grid;
+  grid-gap: 0.5rem;
+}
+
+.room.menuVisible .menu {
+  display: flex;
+}
+.room.menuHidden .menu {
+  display: none;
+}
+.room.menuVisible .menu-control {
+  background-image: url("./assets/menu.svg");
+}
+.room.menuOpened .menu-control {
+  background-image: url("./assets/menu_close.svg");
+}
+.room.menuOpened .menu-options {
+  display: grid;
+}
+.menu .menu-control {
+  width: 32px;
+  height: 32px;
+  background-size: cover;
+}
+.menu .menu-options {
+  display: none;
+  grid-gap: 0.5rem;
+}
+.room.adding > .menu-option {
+  display: block;
+}
+.menu-option.adding {
+  width: 32px;
+  height: 32px;
+  background-image: url("./assets/add.top.svg");
+  background-size: cover;
+}
+.adding.top {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 0%;
+  transform: translateX(-50%) translateY(calc(-100% - 8px));
+}
+.adding.bottom {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: 0%;
+  transform: translateX(-50%) translateY(calc(100% + 8px));
+}
+.adding.left {
+  display: none;
+  position: absolute;
+  left: 0%;
+  top: 50%;
+  transform: translateY(-50%) translateX(calc(-100% - 8px));
+}
+.adding.right {
+  display: none;
+  position: absolute;
+  right: 0px;
+  top: 50%;
+  transform: translateY(-50%) translateX(calc(100% + 8px));
+}

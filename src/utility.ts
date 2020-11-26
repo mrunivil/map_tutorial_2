@@ -1,18 +1,20 @@
 import { Shape } from "./model/shape";
 import { Layer } from "./model/layer";
+import { MAP_HEIGHT, MAP_WIDTH } from ".";
 function checkHorizontalCollision(s1: Shape, s2: Shape): boolean {
   return (
-    ((s1.x || 0) <= (s2.x || 0) &&
-      (s1.x || 0) + (s1.width || 0) >= (s2.x || 0)) ||
-    ((s1.x || 0) >= (s2.x || 0) && (s2.x || 0) + (s2.width || 0) >= (s1.x || 0))
+    s1.x === s2.x ||
+    ((s1.x || 0) < (s2.x || 0) &&
+      (s1.x || 0) + (s1.width || 0) > (s2.x || 0)) ||
+    ((s1.x || 0) > (s2.x || 0) && (s2.x || 0) + (s2.width || 0) > (s1.x || 0))
   );
 }
 function checkVerticalCollision(s1: Shape, s2: Shape): boolean {
   return (
-    ((s1.y || 0) <= (s2.y || 0) &&
-      (s1.y || 0) + (s1.height || 0) >= (s2.y || 0)) ||
-    ((s1.y || 0) >= (s2.y || 0) &&
-      (s2.y || 0) + (s2.height || 0) >= (s1.y || 0))
+    s1.y === s2.y ||
+    ((s1.y || 0) < (s2.y || 0) &&
+      (s1.y || 0) + (s1.height || 0) > (s2.y || 0)) ||
+    ((s1.y || 0) > (s2.y || 0) && (s2.y || 0) + (s2.height || 0) > (s1.y || 0))
   );
 }
 export function detectCollision(shape: Shape, layer: Layer) {
@@ -23,6 +25,11 @@ export function detectCollision(shape: Shape, layer: Layer) {
       checkHorizontalCollision(shape, s) && checkVerticalCollision(shape, s);
     if (collision) break;
   }
+  collision = collision || shape.x < 0 || shape.y < 0;
+  collision =
+    collision ||
+    shape.x + shape.width > MAP_WIDTH ||
+    shape.y + shape.height > MAP_HEIGHT;
   return collision;
 }
 export function hexToHSL(

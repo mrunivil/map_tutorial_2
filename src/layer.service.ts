@@ -36,26 +36,13 @@ export abstract class LayerService {
   static generateLayerElement(id: string) {
     const targetEl = document.createElement("div");
     ControlsService.registerClickListener(targetEl, () => {
-      this.clearSelection();
+      MapService.clearSelection();
     });
     targetEl.id = MapService.currentLayerName;
     targetEl.style.width = `${MapService.TOTAL_MAP_WIDTH}px`;
     targetEl.style.height = `${MapService.TOTAL_MAP_HEIGHT}px`;
     targetEl.style.position = "absolute";
     return targetEl;
-  }
-
-  static addShape(shape: Shape, layer: Layer): void {
-    if (this.canAddShape(shape, layer))
-      MapService.currentLayer.shapes.set(shape.name, {
-        ...shape,
-        canAdd: {
-          top: this.canAddShapeTop(shape, layer),
-          right: this.canAddShapeRight(shape, layer),
-          bottom: this.canAddShapeBottom(shape, layer),
-          left: this.canAddShapeLeft(shape, layer)
-        }
-      });
   }
   static removeShape(shape: Shape, layer: Layer) {}
   static canAddShape(shape: Shape, layer: Layer): boolean {
@@ -65,24 +52,12 @@ export abstract class LayerService {
     return !detectCollision({ ...shape, y: shape.y - 2 }, layer);
   }
   static canAddShapeRight(shape: Shape, layer: Layer) {
-    return !detectCollision({ ...shape, x: shape.y + 2 }, layer);
+    return !detectCollision({ ...shape, x: shape.x + 2 }, layer);
   }
   static canAddShapeBottom(shape: Shape, layer: Layer) {
     return !detectCollision({ ...shape, y: shape.y + 2 }, layer);
   }
   static canAddShapeLeft(shape: Shape, layer: Layer) {
-    return !detectCollision({ ...shape, x: shape.y - 2 }, layer);
-  }
-
-  static clearSelection() {
-    for (let key of Array.from(MapService.currentLayer.shapes.keys())) {
-      const shape = {
-        ...MapService.currentLayer.shapes.get(key),
-        shapeState: ShapeState.default,
-        menuState: MenuState.menuHidden
-      } as Shape;
-      MapService.currentLayer.shapes.set(key, shape);
-      draw();
-    }
+    return !detectCollision({ ...shape, x: shape.x - 2 }, layer);
   }
 }
