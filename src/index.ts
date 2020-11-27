@@ -42,6 +42,10 @@ export function draw() {
   // }
 }
 function createNewMap() {
+  const map = document.querySelector(".map");
+  if (map) {
+    map.remove();
+  }
   AppState.createNewMap();
   draw();
   // MapService.createNewMap();
@@ -62,6 +66,8 @@ function addNewLayer() {
     alert("Bitte erst einen neuen Grundriss erstellen");
   } else {
     const layerName = window.prompt("Name of Your new Layer");
+    const currentLayer = document.querySelector("#current_layer");
+    if (currentLayer) currentLayer.remove();
     AppState.addNewLayer(layerName || "kein name");
     draw();
   }
