@@ -1,3 +1,6 @@
+import { Dimension } from "./dimension";
+import { Vector } from "./vector";
+import { ViewModel } from "./view.model";
 export enum ShapeType {
   "floor",
   "room"
@@ -21,8 +24,15 @@ export class Shape {
   readonly y: number = 0;
   readonly width: number = 1;
   readonly height: number = 1;
-  readonly type: ShapeType = ShapeType.floor;
   readonly color: string = "#daeecd";
+  constructor(obj?: Partial<Shape>) {
+    Object.assign(this, obj);
+  }
+}
+export class ShapeViewModel implements ViewModel {
+  readonly position!: Vector;
+  readonly dimension!: Dimension;
+  readonly shape!: Shape;
   readonly shapeState: ShapeState = ShapeState.default;
   readonly menuState: MenuState = MenuState.menuHidden;
   readonly canAdd: {
@@ -31,7 +41,7 @@ export class Shape {
     bottom: boolean;
     left: boolean;
   } = { top: true, right: true, bottom: true, left: true };
-  constructor(obj?: Partial<Shape>) {
+  constructor(obj: Partial<ShapeViewModel>) {
     Object.assign(this, obj);
   }
 }

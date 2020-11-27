@@ -21,8 +21,10 @@ export function detectCollision(shape: Shape, layer: Layer) {
   const shapes = Array.from(layer.shapes.values());
   let collision = false;
   for (let s of shapes) {
-    collision =
-      checkHorizontalCollision(shape, s) && checkVerticalCollision(shape, s);
+    if (s.name !== shape.name) {
+      collision =
+        checkHorizontalCollision(shape, s) && checkVerticalCollision(shape, s);
+    }
     if (collision) break;
   }
   collision = collision || shape.x < 0 || shape.y < 0;
