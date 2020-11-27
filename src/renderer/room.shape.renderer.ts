@@ -10,15 +10,15 @@ export class RoomShapeRenderer extends AbstractRenderer {
     ) as HTMLElement;
     if (addTop) addTop.style.display = shape.canAdd.top ? "block" : "none";
     const addBottom = document.querySelector(
-      `#${shape.name}.adding>.adding.top`
+      `#${shape.name}.adding>.adding.bottom`
     ) as HTMLElement;
     if (addTop) addTop.style.display = shape.canAdd.top ? "block" : "none";
     const addLeft = document.querySelector(
-      `#${shape.name}.adding>.adding.top`
+      `#${shape.name}.adding>.adding.left`
     ) as HTMLElement;
     if (addTop) addTop.style.display = shape.canAdd.top ? "block" : "none";
     const addRight = document.querySelector(
-      `#${shape.name}.adding>.adding.top`
+      `#${shape.name}.adding>.adding.right`
     ) as HTMLElement;
     if (addTop) addTop.style.display = shape.canAdd.top ? "block" : "none";
 

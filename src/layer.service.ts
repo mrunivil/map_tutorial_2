@@ -1,9 +1,8 @@
-import { draw } from ".";
 import { ControlsService } from "./controls.service";
 import { FloorService } from "./floor.service";
 import { MapService } from "./map.service";
 import { Layer } from "./model/layer";
-import { MenuState, Shape, ShapeState } from "./model/shape";
+import { Shape } from "./model/shape";
 import { ShapeService } from "./shape.service";
 import { detectCollision } from "./utility";
 export abstract class LayerService {

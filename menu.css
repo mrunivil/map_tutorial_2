@@ -2,7 +2,6 @@
   display: grid;
   grid-gap: 0.5rem;
 }
-
 .room.menuVisible .menu {
   display: flex;
 }
